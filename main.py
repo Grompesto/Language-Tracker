@@ -51,9 +51,9 @@ app = FastAPI()
 @app.post("/words")
 async def create_word(word: WordCreate, db:Session = Depends(get_db)):
     if db.query(Word).filter(Word.name == word.name).first():
-        raise HTTPException(status_code=404, detail="Word already exists")
+        raise HTTPException(status_code=400, detail="Word already exists")
     # Create a new word
-    new_word = Word(name=word.name)
+    new_word = Word(**word.dict())
     db.add(new_word)
     db.commit()
     db.refresh(new_word)
@@ -87,6 +87,8 @@ async def update_word(word_id: int, word:WordCreate, db:Session = Depends(get_db
 @app.get("/words/quiz")
 async def quiz_words(db:Session = Depends(get_db)):
     db_words = db.query(Word).all()
+    if not db_words:
+        raise HTTPException(status_code=404, detail="No words inside database")
     return min(db_words, key=lambda x: x.review_count)
 
 @app.post("/words/{word_id}/review")
