@@ -1,47 +1,9 @@
 from fastapi import FastAPI, HTTPException,Depends
-
-from pydantic import BaseModel
 from typing import Optional, List
-
-from sqlalchemy import String,Integer,Column,create_engine
-from sqlalchemy.orm import Session, sessionmaker, DeclarativeBase
-from sqlalchemy.ext.declarative import declarative_base
-
-
-# Database setup
-engine = create_engine("sqlite:///words.db")
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
-
-# Database Model
-class Word(Base):
-    __tablename__ = "Words"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String(100), nullable=False,unique=True)
-    translation = Column(String(100))
-    difficulty = Column(String(30))
-    review_count = Column(Integer, default = 0)
-    interval = Column(Integer, default = 1)
-
-Base.metadata.create_all(engine)
-
-# Pydantic Model
-class WordCreate(BaseModel):
-    name: str
-    translation: str
-    difficulty: str
-    review_count: int = 0
-    interval: int = 1
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
+from database import get_db
+from schemas import WordCreate
+from models import Word
+from sqlalchemy.orm import Session
 
 app = FastAPI()
 
