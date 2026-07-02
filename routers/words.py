@@ -1,4 +1,4 @@
-from fastapi import APIRouter, FastAPI, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from models import Word
 from schemas import WordCreate
 from sqlalchemy.orm import Session
@@ -9,7 +9,6 @@ router = APIRouter()
 
 
 ### Endpoints ###
-
 # Create word
 @router.post("")
 async def create_word(word: WordCreate, db:Session = Depends(get_db)):
