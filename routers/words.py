@@ -1,14 +1,44 @@
 from fastapi import APIRouter, Depends, HTTPException
-from models import Word
-from schemas import WordCreate
+from fastapi.security import OAuth2PasswordBearer
+from passlib.context import CryptContext
+from typing import Annotated
+from models import Word,User
+from schemas import WordCreate,UserCreate
 from sqlalchemy.orm import Session
 from database import get_db
-
+import jwt
 
 router = APIRouter()
+password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
+# JWT token
+key = "secret"
+encoded = jwt.encode({"some": "payload"}, key, algorithm="HS256")
+jwt.decode(encoded, key, algorithms=["HS256"])
+
+# Security
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+@router.get("/user/")
+async def read_user(token: Annotated[str, Depends(oauth2_scheme)]):
+    return {"token": token}
 
 ### Endpoints ###
+
+@router.post("/auth/register")
+async def register_user(user_in: UserCreate, db:Session = Depends(get_db)):
+    if db.query(User).filter(User.email == user_in.email).first():
+        raise HTTPException(status_code=400, detail="User with this email already exists")
+    hashed_password = password_context.hash(user_in.password)
+    new_user = User(email = user_in.email, hashed_password=hashed_password)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return {"message": "User registered"}
+@router.post("/auth/token")
+
+
 # Create word
 @router.post("")
 async def create_word(word: WordCreate, db:Session = Depends(get_db)):

@@ -7,3 +7,7 @@ class WordCreate(BaseModel):
     difficulty: str
     review_count: int = 0
     interval: int = 1
+
+class UserCreate(BaseModel):
+    email: str
+    password: str
