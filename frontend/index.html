@@ -2,9 +2,129 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Language Tracker</title>
+    <style>
+        /*.hidden {*/
+        /*    display: none;*/
+        /*}*/
+    </style>
 </head>
 <body>
+    <header>
+        <div>
+            <h1>Language Tracker</h1>
+            <nav>
+                <ul>
+                    <li><a href="#home-section">Main Page</a></li>
+                    <li><a href="#dictionary-section">Learn Words</a></li>
+                    <li><a href="#profile-section">My Profile</a></li>
+                </ul>
 
+            </nav>
+        </div>
+    </header>
+    <main>
+        <section id="home-section">
+            <h2>Master New Vocabulary Effortlessly</h2>
+            <p>
+                Language Tracker is a smart flashcard tool designed to help you memorize foreign words
+                using spaced repetition. Track your learning progress, stay consistent, and expand
+                your vocabulary day by day.
+            </p>
+            <p><a href="#auth-section">Get Started for Free</a></p>
+        </section>
+        <section id="auth-section" class="hidden">
+
+            <form id="login-form">
+                <h2>Sign In</h2>
+                <h3>Welcome Back</h3>
+                <p>Please enter your credentials to access your profile.</p>
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    required
+                    placeholder="e.g., Grompesto"
+                    />
+                <label for="pwd">Password</label>
+                <input
+                    type="password"
+                    id="pwd"
+                    name="pwd"
+                    required
+                    placeholder="qwerty123"
+                    />
+                <button type="button" id="log-in-btn">Log In</button>
+            </form>
+            <form id="register-form">
+                <h2>Create an Account</h2>
+                <p>Join Language Tracker today and start building your custom dictionary.</p>
+                <label for="reg-username">Username</label>
+                <input
+                    type="text"
+                    id="reg-username"
+                    name="username"
+                    required
+                    placeholder="Choose a username"
+                    />
+                <label for="reg-pwd">Password</label>
+                <input
+                    type="password"
+                    id="reg-pwd"
+                    name="pwd"
+                    required
+                    placeholder="Choose a password"
+                    />
+                <button type="button" id="sign-up-btn">Register</button>
+            </form>
+        </section>
+        <section id="profile-section" class="hidden">
+            <h2>Profile</h2>
+            <p>This is your profile section, here you can perform any actions with your account.</p>
+        </section>
+        <section id="dictionary-section" class="hidden">
+            <h2>Learning Section</h2>
+            <form>
+                <label for="word-name">Word</label>
+                <input
+                    type="text"
+                    required
+                    id="word-name"
+                    name="word-name"
+                    />
+                <label for="word-translation">Translation</label>
+                <input
+                    type="text"
+                    required
+                    id="word-translation"
+                    name="word-translation"
+                    />
+                <label for="word-difficulty">Choose word's difficulty</label>
+                <select id="word-difficulty">
+                    <option>Easy</option>
+                    <option>Medium</option>
+                    <option>Hard</option>
+                </select>
+                <button type="button" id="add-word-btn">Add Word</button>
+            </form>
+            <div id="word-list"></div>
+            <div id="quiz-card">
+                <h3>Word:</h3>
+                <button type="button">Show Translation</button>
+                <button type="button">Remembered</button>
+                <button type="button">Forgot</button>
+            </div>
+        </section>
+    </main>
+    <footer>
+        <h2>Contact Information</h2>
+        <p>Author: Viktor Solomonov</p>
+        <p><a href="mailto:viktorsolomonov2007@gmail.com">viktorsolomonov2007@gmail.com</a></p>
+        <p><a href="https://github.com/Grompesto" target="_blank" rel="noopener noreferrer">
+            GitHub
+            </a>
+        </p>
+    </footer>
 </body>
 </html>

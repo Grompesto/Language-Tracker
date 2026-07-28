@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 # Pydantic Model
 class WordCreate(BaseModel):
@@ -9,5 +10,15 @@ class WordCreate(BaseModel):
     interval: int = 1
 
 class UserCreate(BaseModel):
-    email: str
+    username: str
+    full_name: Optional[str] = None
     password: str
+
+class UserPublic(BaseModel):
+    username: str
+    full_name: Optional[str] = None
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+

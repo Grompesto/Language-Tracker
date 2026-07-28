@@ -1,5 +1,5 @@
 from sqlalchemy import String,Integer,Column, ForeignKey
-from database import Base,engine
+from database import Base
 
 # Database Model
 class Word(Base):
@@ -7,7 +7,7 @@ class Word(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("Users.id"), nullable=False)
-    name = Column(String(100), nullable=False,unique=True)
+    name = Column(String(100), nullable=False)
     translation = Column(String(100))
     difficulty = Column(String(30))
     review_count = Column(Integer, default = 0)
@@ -17,7 +17,7 @@ class User(Base):
     __tablename__ = "Users"
 
     id = Column(Integer,primary_key=True, index=True)
-    email = Column(String(100),unique=True, nullable=False)
+    username = Column(String(100),unique=True, nullable=False)
+    full_name = Column(String(100))
     hashed_password = Column(String(255), nullable=False)
 
-Base.metadata.create_all(engine)
