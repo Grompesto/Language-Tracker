@@ -2,36 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Language learning">
     <title>Language Tracker</title>
-    <style>
-        /*.hidden {*/
-        /*    display: none;*/
-        /*}*/
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div>
-            <h1>Language Tracker</h1>
-            <nav>
-                <ul>
-                    <li><a href="#home-section">Main Page</a></li>
-                    <li><a href="#dictionary-section">Learn Words</a></li>
-                    <li><a href="#profile-section">My Profile</a></li>
+    <header class="header">
+        <div class="header__container">
+            <nav class="header__nav">
+                <h1 class="header__h1">Language Tracker</h1>
+                <ul class="header__list">
+                    <li class="header__list-item">
+                        <a class="header__list-link active" href="#home-section">Main Page</a></li>
+                    <li class="header__list-item">
+                        <a class="header__list-link" href="#dictionary-section">Learn Words</a></li>
+                    <li class="header__list-item">
+                        <a class="header__list-link" href="#profile-section">My Profile</a></li>
                 </ul>
-
             </nav>
         </div>
     </header>
+    <hr>
     <main>
-        <section id="home-section">
-            <h2>Master New Vocabulary Effortlessly</h2>
-            <p>
+        <section id="home-section" class="hero">
+            <div class="hero__container">
+                <h2 class="hero__h2">Master New Vocabulary Effortlessly</h2>
+                <p class="hero__desc">
                 Language Tracker is a smart flashcard tool designed to help you memorize foreign words
                 using spaced repetition. Track your learning progress, stay consistent, and expand
                 your vocabulary day by day.
-            </p>
-            <p><a href="#auth-section">Get Started for Free</a></p>
+                </p>
+                <p><a class="hero__button" href="#auth-section">Get Started for Free</a></p>
+            </div>
         </section>
         <section id="auth-section" class="hidden">
 
@@ -117,14 +123,17 @@
             </div>
         </section>
     </main>
-    <footer>
-        <h2>Contact Information</h2>
-        <p>Author: Viktor Solomonov</p>
-        <p><a href="mailto:viktorsolomonov2007@gmail.com">viktorsolomonov2007@gmail.com</a></p>
-        <p><a href="https://github.com/Grompesto" target="_blank" rel="noopener noreferrer">
-            GitHub
-            </a>
-        </p>
+    <hr>
+    <footer class="footer">
+        <div class="footer__container">
+            <h2 class="footer__h2">Contact Information</h2>
+            <p class="footer__author">Author: Viktor Solomonov</p>
+            <p><a class="footer__link" href="mailto:viktorsolomonov2007@gmail.com">viktorsolomonov2007@gmail.com</a></p>
+            <p><a class="footer__link" href="https://github.com/Grompesto" target="_blank" rel="noopener noreferrer">
+                GitHub
+                </a>
+            </p>
+        </div>
     </footer>
 </body>
 </html>
