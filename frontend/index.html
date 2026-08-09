@@ -39,50 +39,51 @@
                 <p><a class="hero__button" href="#auth-section">Get Started for Free</a></p>
             </div>
         </section>
-        <section id="auth-section" class="hidden">
+        <section class="auth-section hidden">
+            <form class="login-form">
+                <fieldset>
+                    <legend>Sign In</legend>
+                    <label for="username">Username: </label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        placeholder="e.g., Grompesto"
+                        />
+                    <label for="pwd">Password: </label>
+                    <input
+                        type="password"
+                        id="pwd"
+                        name="pwd"
+                        required
+                        placeholder="qwerty123"
+                        />
 
-            <form id="login-form">
-                <h2>Sign In</h2>
-                <h3>Welcome Back</h3>
-                <p>Please enter your credentials to access your profile.</p>
-                <label for="username">Username</label>
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    required
-                    placeholder="e.g., Grompesto"
-                    />
-                <label for="pwd">Password</label>
-                <input
-                    type="password"
-                    id="pwd"
-                    name="pwd"
-                    required
-                    placeholder="qwerty123"
-                    />
-                <button type="button" id="log-in-btn">Log In</button>
+                </fieldset>
+                <button class="submit-btn" type="submit" id="log-in-btn">Log In</button>
             </form>
-            <form id="register-form">
-                <h2>Create an Account</h2>
-                <p>Join Language Tracker today and start building your custom dictionary.</p>
-                <label for="reg-username">Username</label>
-                <input
-                    type="text"
-                    id="reg-username"
-                    name="username"
-                    required
-                    placeholder="Choose a username"
-                    />
-                <label for="reg-pwd">Password</label>
-                <input
-                    type="password"
-                    id="reg-pwd"
-                    name="pwd"
-                    required
-                    placeholder="Choose a password"
-                    />
-                <button type="button" id="sign-up-btn">Register</button>
+            <form class="register-form">
+                <fieldset>
+                    <legend>Create an Account</legend>
+                    <label for="reg-username">Username: </label>
+                    <input
+                        type="text"
+                        id="reg-username"
+                        name="username"
+                        required
+                        placeholder="Choose a username"
+                        />
+                    <label for="reg-pwd">Password: </label>
+                    <input
+                        type="password"
+                        id="reg-pwd"
+                        name="pwd"
+                        required
+                        placeholder="Choose a password"
+                        />
+                </fieldset>
+                <button class="submit-btn" type="submit" id="sign-up-btn">Register</button>
             </form>
         </section>
         <section id="profile-section" class="hidden">

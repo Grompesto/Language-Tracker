@@ -73,8 +73,6 @@ a {
 }
 
 
-
-
 /* Body part */
 
 .hero {
@@ -132,4 +130,62 @@ a {
 
 .footer__link:hover {
     color: var(--dark);
+}
+
+/* Auth Section */
+
+.auth-section {
+    text-align: center;
+    background-color: var(--green);
+    width: 80%;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 10px 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px green;
+}
+
+input {
+    background-color: lightgreen;
+    width: 95%;
+    border: 1px solid white;
+    border-radius: 3px;
+    padding: 10px;
+}
+
+fieldset {
+    padding: 20px;
+    margin: 20px 0;
+}
+
+.submit-btn {
+    cursor: pointer;
+    background-color: lightgreen;
+    font-size: 16px;
+    font-weight: 700;
+    margin: auto;
+    padding: 12px 20px;
+    border-radius: 6px;
+    border: none;
+    display: block;
+    color: purple;
+    transition: opacity 0.3s ease;
+}
+
+.submit-btn:hover {
+    opacity: 50%;
+}
+
+label {
+    font-size: 20px;
+}
+
+fieldset {
+    border-radius: 5px;
+    border: 2px solid white;
+}
+
+fieldset legend {
+    font-size: 28px;
+    font-weight: 600;
 }
