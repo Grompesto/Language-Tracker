@@ -4,8 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Language learning">
-    <title>Language Tracker</title>
+    <title>Lexora</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="lexora.png" type="image/png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
@@ -14,7 +15,10 @@
     <header class="header">
         <div class="header__container">
             <nav class="header__nav">
-                <h1 class="header__h1">Language Tracker</h1>
+                <h1 class="header__h1">
+                    <img src="lexora.png" alt="Lexora Logo" class="header__logo" />
+                    Lexora
+                </h1>
                 <ul class="header__list">
                     <li class="header__list-item">
                         <a class="header__list-link active" href="#home-section">Main Page</a></li>
@@ -39,7 +43,7 @@
                 <p><a class="hero__button" href="#auth-section">Get Started for Free</a></p>
             </div>
         </section>
-        <section class="auth-section hidden">
+        <section id="auth-section" class="hidden">
             <form class="login-form">
                 <fieldset>
                     <legend>Sign In</legend>
@@ -97,12 +101,11 @@
                     <p><span>Last Name:</span> <strong>Solomonov</strong></p>
                     <p><span>Email:</span> <strong>qwerty123@gmail.com</strong></p>
                     <button type="button" class="submit-btn">Log Out</button>
-                    <button type="button" class="submit-btn">Delete Account</button>
+                    <button type="button" class="submit-btn danger">Delete Account</button>
                 </div>
                 <div class="statistics-container">
                     <h2>Your Statistics</h2>
                 </div>
-
             </div>
 
         </section>

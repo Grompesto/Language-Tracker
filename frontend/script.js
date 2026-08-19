@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const navLinks = document.querySelectorAll('.header__list-link');
     const sections = document.querySelectorAll('main > section');
+    const sectionLinks = document.querySelectorAll('a[href^="#"]');
 
     function showSection(targetId) {
         sections.forEach(section => {
@@ -17,14 +18,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    navLinks.forEach(link => {
+    sectionLinks.forEach(link => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
 
             const targetId = link.getAttribute('href');
             showSection(targetId);
 
-            link.classList.add('active');
-        })
-    })
+            if (link.classList.contains('header__list-link'))
+            {
+                link.classList.add('active');
+            }
+        });
+    });
 });
