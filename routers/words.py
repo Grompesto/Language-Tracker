@@ -11,6 +11,7 @@ from sqlalchemy.orm import Session
 from database import get_db,get_user,create_user
 from jose import jwt,JWTError
 from datetime import datetime,timedelta,timezone
+import random
 
 
 router = APIRouter()
@@ -22,7 +23,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 # Security
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="words/login")
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
@@ -39,7 +40,7 @@ def create_access_token(data: dict, expires_minutes: int = ACCESS_TOKEN_EXPIRE_M
 def authenticate_user(username: str, password: str, db: Session) -> Optional[User]:
     user = db.query(User).filter(User.username == username).first()
 
-    if not user or not verify_password(password, user["hashed_password"]):
+    if not user or not verify_password(password, user.hashed_password):
         return None
     return user
 
@@ -128,7 +129,10 @@ async def quiz_words(db:Session = Depends(get_db), current_user: User = Depends(
     db_words = db.query(Word).filter(Word.user_id == current_user.id).all()
     if not db_words:
         raise HTTPException(status_code=404, detail="No words inside database")
-    return min(db_words, key=lambda x: x.review_count)
+
+    lowest = min(w.review_count for w in db_words)
+    candidates = [w for w in db_words if w.review_count == lowest]
+    return random.choice(candidates)
 
 
 @router.post("/{word_id}/review")

@@ -41,4 +41,3 @@ def create_user(username: str, hashed_password: str, db:Session, full_name: Opti
     db.refresh(new_user)
     return new_user
 
-Base.metadata.create_all(engine)
