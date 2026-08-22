@@ -6,8 +6,8 @@ class WordCreate(BaseModel):
     name: str
     translation: str
     difficulty: str
-    review_count: int = 0
-    interval: int = 1
+    review_count: Optional[int] = 0
+    interval: Optional[int] = 1
 
 class UserCreate(BaseModel):
     username: str

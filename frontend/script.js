@@ -166,4 +166,64 @@ document.addEventListener('DOMContentLoaded', () => {
         alert('You have logged out.')
         showSection('#home-section');
     });
+
+    const addWordBtn = document.getElementById('add-word-btn');
+
+    async function loadWords() {
+        const response = await authFetch('/words');
+        if (!response || !response.ok) return;
+
+        const words = await response.json();
+        const wordList = document.getElementById('word-list');
+        wordList.innerHTML = '';
+
+        words.forEach(word => {
+            const card = document.createElement('div');
+            card.style.padding = '20px';
+            card.style.background = 'var(--bg-surface)';
+            card.style.borderRadius = 'var(--radius)';
+            card.style.boxShadow = 'var(--shadow)';
+            card.innerHTML = `
+                <h3 style="color: var(--primary); margin-bottom: 10px;">${word.name}</h3>
+                <p><strong>Translation:</strong> ${word.translation}</p>
+                <p><strong>Difficulty:</strong> ${word.difficulty}</p>
+            `;
+            wordList.appendChild(card);
+        });
+    }
+
+    addWordBtn.addEventListener('click', async () => {
+        const name = document.getElementById('word-name').value.trim();
+        const translation = document.getElementById('word-translation').value.trim();
+        const difficulty = document.getElementById('word-difficulty').value;
+
+        if (!name || !translation) {
+            alert('Please fill in both the word and translation');
+            return;
+        }
+
+        const response = await authFetch('/words', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name,
+                translation,
+                difficulty,
+                review_count: 0,
+                interval: 1
+            })
+        });
+
+        if (response && response.ok) {
+            document.getElementById('word-name').value = '';
+            document.getElementById('word-translation').value = '';
+            loadWords();
+        } else if (response) {
+            const data = await response.json();
+            const errorMsg = Array.isArray(data.detail)
+            ? data.detail.map(err => `${err.loc.at(-1)}: ${err.msg}`).join('\n')
+            : data.detail;
+            alert('Validation Error:\n' + errorMsg);
+        }
+    });
 });
