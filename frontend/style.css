@@ -288,14 +288,6 @@ fieldset legend {
     margin-top: 10px;
 }
 
-.avatar::before {
-    content: "G";
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 65px;
-}
-
 /*Dictionary Section*/
 #dictionary-section {
     padding: 40px;

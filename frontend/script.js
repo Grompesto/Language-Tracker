@@ -3,34 +3,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const sections = document.querySelectorAll('main > section');
     const sectionLinks = document.querySelectorAll('a[href^="#"]');
 
-    function showSection(targetId) {
-        sections.forEach(section => {
-            section.classList.add('hidden');
-        });
+    const protectedSections = ['#dictionary-section', '#profile-section'];
 
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-        });
+    function showSection(targetId) {
+        const token = localStorage.getItem('access_token');
+        
+        if (protectedSections.includes(targetId) && !token) {
+            targetId = '#auth-section';
+        } else if (targetId === '#auth-section' && token) {
+            targetId = '#dictionary-section';
+        }
+
+        sections.forEach(section => section.classList.add('hidden'));
+        navLinks.forEach(link => link.classList.remove('active'));
 
         const targetSection = document.querySelector(targetId);
         if (targetSection) {
             targetSection.classList.remove('hidden');
+        }
+
+        const activeLink = document.querySelector(`.header__list-link[href="${targetId}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+
+        if (targetId === '#profile-section' && token) {
+            loadProfile();
+        } else if (targetId === '#dictionary-section' && token) {
+            loadWords();
         }
     }
 
     sectionLinks.forEach(link => {
         link.addEventListener('click', (event) => {
             event.preventDefault();
-
-            const targetId = link.getAttribute('href');
-            showSection(targetId);
-
-            if (link.classList.contains('header__list-link'))
-            {
-                link.classList.add('active');
-            }
+            showSection(link.getAttribute('href'));
         });
     });
+
+    const initialHash = window.location.hash || '#home-section';
+    showSection(initialHash);
 
     const API_URL = 'http://127.0.0.1:8000';
 
@@ -126,10 +138,32 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!response || !response.ok) return;
 
         const user = await response.json();
-        console.log(user);
+
+        document.getElementById('profile-username').textContent = user.username;
+        document.getElementById('profile-fullname').textContent = user.full_name || 'Not provided';
+
+        const avatar = document.querySelector('.avatar');
+        avatar.textContent = user.username.charAt(0).toUpperCase();
+        avatar.style.display = 'flex';
+        avatar.style.alightItems = 'center';
+        avatar.style.justifyContent = 'center';
+        avatar.style.fontSize = '45px';
     }
 
     if (localStorage.getItem('access_token')) {
         loadProfile();
     }
+
+    const getStartedBtn = document.querySelector('.hero__button');
+    getStartedBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showSection('#dictionary-section');
+    });
+
+    const logoutBtn = document.querySelector('.profile-container .submit-btn:not(.danger)');
+    logoutBtn.addEventListener('click', () => {
+        localStorage.removeItem('access_token');
+        alert('You have logged out.')
+        showSection('#home-section');
+    });
 });
