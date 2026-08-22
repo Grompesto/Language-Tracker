@@ -85,6 +85,14 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db:Session = D
 def read_me(current_user: User = Depends(get_current_user)):
     return current_user
 
+@router.delete("/me")
+def delete_user(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    db.query(Word).filter(Word.user_id == current_user.id).delete()
+
+    db.delete(current_user)
+    db.commit()
+    return {"message": "Account deleted"}
+
 # Create word
 @router.post("")
 async def create_word(word: WordCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):

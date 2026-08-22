@@ -167,6 +167,21 @@ document.addEventListener('DOMContentLoaded', () => {
         showSection('#home-section');
     });
 
+    const deleteAccountBtn = document.querySelector('.profile-container .submit-btn.danger');
+    if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', async () => {
+            const confirmed = confirm('Are you sure you want to delete your account?')
+            if (confirmed) {
+                const response = await authFetch('/words/me', { method: 'DELETE'});
+                if (response && response.ok) {
+                    localStorage.removeItem('access_token');
+                    alert('Your account has been deleted');
+                    showSection('#home-section');
+                }
+            }
+        });
+    }
+
     const addWordBtn = document.getElementById('add-word-btn');
 
     async function loadWords() {
@@ -187,8 +202,52 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h3 style="color: var(--primary); margin-bottom: 10px;">${word.name}</h3>
                 <p><strong>Translation:</strong> ${word.translation}</p>
                 <p><strong>Difficulty:</strong> ${word.difficulty}</p>
+                <div style="margin-top: 15px; display: flex; gap: 10px;">
+                    <button class="edit-btn" data-id="${word.id}" data-name="${word.name}" data-trans="${word.translation}" 
+                    data-diff="${word.difficulty}" style="background: var(--primary); color: white; border: none; 
+                    padding: 5px 15px; border-radius: 5px; cursor: pointer;">Edit</button>
+                    <button class="delete-btn" data-id="${word.id}" style="background: #e74c3c; color: white; border: none; 
+                    padding: 5px 15px; border-radius: 5px; cursor: pointer;">Delete</button>
+                </div>
             `;
             wordList.appendChild(card);
+        });
+
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = e.target.getAttribute('data-id');
+                if (confirm('Delete this word?')) {
+                    const res = await authFetch(`/words/${id}`, { method: 'DELETE'});
+                    if (res && res.ok) loadWords();
+                }
+            });
+        });
+
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                const id = e.target.getAttribute('data-id');
+                const oldName = e.target.getAttribute('data-name');
+                const oldTrans = e.target.getAttribute('data-trans');
+                const oldDiff = e.target.getAttribute('data-diff');
+
+                const newName = prompt('Edit word:', oldName);
+                const newTrans = prompt('Edit translation:', oldTrans);
+
+                if (newName && newTrans) {
+                    const res = await authFetch(`/words/${id}`, {
+                        method: 'PUT',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({
+                            name: newName,
+                            translation: newTrans,
+                            difficulty: oldDiff,
+                            review_count: 0,
+                            interval: 1
+                        })
+                    });
+                    if (res && res.ok) loadWords();
+                }
+            });
         });
     }
 
