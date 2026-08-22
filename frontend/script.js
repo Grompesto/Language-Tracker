@@ -211,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             wordList.appendChild(card);
+            loadQuizWord();
         });
 
         document.querySelectorAll('.delete-btn').forEach(btn => {
@@ -285,4 +286,61 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Validation Error:\n' + errorMsg);
         }
     });
+
+    let currentQuizWord = null;
+
+    async function loadQuizWord() {
+        const response = await authFetch('/words/quiz');
+        const wordEl = document.getElementById('quiz-word');
+        const transEl = document.getElementById('quiz-translation');
+        const showBtn = document.getElementById('btn-show-trans');
+        const actions = document.getElementById('quiz-actions');
+
+        if (!response || !response.ok) {
+            wordEl.textContent = 'Add some words first!';
+            transEl.textContent = '';
+            showBtn.style.display = 'none';
+            actions.classList.add('hidden');
+            return;
+        }
+
+        currentQuizWord = await response.json();
+        wordEl.textContent = currentQuizWord.name;
+        transEl.textContent = currentQuizWord.translation;
+
+        transEl.classList.add('hidden');
+        showBtn.style.display = 'inline-block';
+        actions.classList.add('hidden');
+
+        document.getElementById('btn-remember').style.backgroundColor = '';
+        document.getElementById('btn-forget').style.backgroundColor = '';
+        document.getElementById('btn-remember').style.color = 'var(--text-main)';
+        document.getElementById('btn-forget').style.color = 'var(--text-main)';
+    }
+
+    document.getElementById('btn-show-trans').addEventListener('click', () => {
+        document.getElementById('quiz-translation').classList.remove('hidden');
+        document.getElementById('btn-show-trans').style.display = 'none';
+        document.getElementById('quiz-actions').classList.remove('hidden');
+    });
+
+    async function handleReview(remembered) {
+        if (!currentQuizWord) return;
+
+        const btn = remembered ? document.getElementById('btn-remember') : document.getElementById('btn-forget');
+
+        btn.style.backgroundColor = remembered ? 'var(--success)' : '#e74c3c';
+        btn.style.color = 'white';
+
+        await authFetch(`/words/${currentQuizWord.id}/review?remembered=${remembered}`, {
+            method: 'POST'
+        });
+
+        setTimeout(() => {
+            loadQuizWord();
+        }, 500);
+    }
+
+    document.getElementById('btn-remember').addEventListener('click', () => handleReview(true));
+    document.getElementById('btn-forget').addEventListener('click', () => handleReview(false));
 });

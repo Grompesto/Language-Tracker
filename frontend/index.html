@@ -135,10 +135,15 @@
             </form>
             <div id="word-list"></div>
             <div id="quiz-card">
-                <h3>Word:</h3>
-                <button type="button">Show Translation</button>
-                <button type="button">Remembered</button>
-                <button type="button">Forgot</button>
+                <h3 id="quiz-word">No words yet</h3>
+                <h3 id="quiz-translation" class="hidden"></h3>
+                <button type="button" id="btn-show-trans">Show Translation</button>
+
+                <div id="quiz-actions" class="hidden">
+                    <button type="button" id="btn-remember">Remembered</button>
+                    <button type="button" id="btn-forget">Forgot</button>
+                </div>
+
             </div>
         </section>
     </main>

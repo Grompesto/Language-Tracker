@@ -385,6 +385,17 @@ fieldset legend {
     color: var(--primary);
 }
 
+#quiz-translation {
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+#quiz-actions {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
 .hidden {
     display: none !important;
 }
