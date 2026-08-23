@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
             loadProfile();
         } else if (targetId === '#dictionary-section' && token) {
             loadWords();
+            loadQuizWord();
         }
     }
 
@@ -145,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const avatar = document.querySelector('.avatar');
         avatar.textContent = user.username.charAt(0).toUpperCase();
         avatar.style.display = 'flex';
-        avatar.style.alightItems = 'center';
+        avatar.style.alignItems = 'center';
         avatar.style.justifyContent = 'center';
         avatar.style.fontSize = '45px';
     }
@@ -211,7 +212,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             wordList.appendChild(card);
-            loadQuizWord();
         });
 
         document.querySelectorAll('.delete-btn').forEach(btn => {
@@ -219,7 +219,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const id = e.target.getAttribute('data-id');
                 if (confirm('Delete this word?')) {
                     const res = await authFetch(`/words/${id}`, { method: 'DELETE'});
-                    if (res && res.ok) loadWords();
+                    if (res && res.ok) {
+                        loadWords();
+                        loadQuizWord();
+                    }
                 }
             });
         });
@@ -253,37 +256,42 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     addWordBtn.addEventListener('click', async () => {
-        const name = document.getElementById('word-name').value.trim();
-        const translation = document.getElementById('word-translation').value.trim();
-        const difficulty = document.getElementById('word-difficulty').value;
+        addWordBtn.disabled = true;
+        try {
+            const name = document.getElementById('word-name').value.trim();
+            const translation = document.getElementById('word-translation').value.trim();
+            const difficulty = document.getElementById('word-difficulty').value;
 
-        if (!name || !translation) {
-            alert('Please fill in both the word and translation');
-            return;
-        }
+            if (!name || !translation) {
+                alert('Please fill in both the word and translation');
+                return;
+            }
+                const response = await authFetch('/words', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name,
+                    translation,
+                    difficulty,
+                    review_count: 0,
+                    interval: 1
+                })
+            });
 
-        const response = await authFetch('/words', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name,
-                translation,
-                difficulty,
-                review_count: 0,
-                interval: 1
-            })
-        });
-
-        if (response && response.ok) {
-            document.getElementById('word-name').value = '';
-            document.getElementById('word-translation').value = '';
-            loadWords();
-        } else if (response) {
-            const data = await response.json();
-            const errorMsg = Array.isArray(data.detail)
-            ? data.detail.map(err => `${err.loc.at(-1)}: ${err.msg}`).join('\n')
-            : data.detail;
-            alert('Validation Error:\n' + errorMsg);
+            if (response && response.ok) {
+                document.getElementById('word-name').value = '';
+                document.getElementById('word-translation').value = '';
+                loadWords();
+                loadQuizWord();
+            } else if (response) {
+                const data = await response.json();
+                const errorMsg = Array.isArray(data.detail)
+                ? data.detail.map(err => `${err.loc.at(-1)}: ${err.msg}`).join('\n')
+                : data.detail;
+                alert('Validation Error:\n' + errorMsg);
+            }
+        } finally {
+            addWordBtn.disabled = false;
         }
     });
 

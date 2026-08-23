@@ -13,6 +13,7 @@ class Word(Base):
     review_count = Column(Integer, default = 0)
     interval = Column(Integer, default = 1)
 
+
 class User(Base):
     __tablename__ = "Users"
 

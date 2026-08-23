@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from typing import Annotated, Optional
 
 from starlette import status
-
+from sqlalchemy import func
 from models import Word,User
 from schemas import WordCreate,UserCreate, UserPublic, Token
 from sqlalchemy.orm import Session
@@ -96,7 +96,7 @@ def delete_user(db: Session = Depends(get_db), current_user: User = Depends(get_
 # Create word
 @router.post("")
 async def create_word(word: WordCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if db.query(Word).filter(Word.name == word.name, Word.user_id == current_user.id).first():
+    if db.query(Word).filter(func.lower(Word.name) == word.name.lower(), Word.user_id == current_user.id).filter():
         raise HTTPException(status_code=400, detail="Word already exists")
 
     # Create a new word
@@ -105,7 +105,7 @@ async def create_word(word: WordCreate, db: Session = Depends(get_db), current_u
     db.add(new_word)
     db.commit()
     db.refresh(new_word)
-    return {"message": "Word created"}
+    return new_word
 
 # Delete word
 @router.delete("/{word_id}")
@@ -124,7 +124,7 @@ async def update_word(word_id: int, word:WordCreate, db:Session = Depends(get_db
     db_word = db.query(Word).filter(Word.id == word_id, Word.user_id == current_user.id).first()
     if not db_word:
         raise HTTPException(status_code=404, detail="Word does not exist")
-    for field,value in word.dict().items():
+    for field,value in word.dict(exclude={"review_count","interval"}).items():
         setattr(db_word, field, value)
 
     db.commit()
@@ -156,10 +156,10 @@ async def review_words(
 
     if remembered:
         db_word.review_count += 1
-        db_word.interval *= 2
+        db_word.interval = max(1, round(db_word.interval * 2.0))
     else:
-        db_word.review_count = 0
-        db_word.interval = 1
+        db_word.review_count = max(0, db_word.review_count - 1)
+        db_word.interval = max(1, round(db_word.interval * 0.5))
 
     db.commit()
     db.refresh(db_word)
