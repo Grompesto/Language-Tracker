@@ -1,0 +1,20 @@
+services:
+  backend:
+    build: .
+    container_name: lexora_backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./words.db:/app/words.db
+    restart: unless-stopped
+
+  frontend:
+    image: nginx:alpine
+    container_name: lexora_frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/usr/share/nginx/html
+    restart: unless-stopped
