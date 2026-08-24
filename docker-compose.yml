@@ -7,7 +7,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./words.db:/app/words.db
+      - ./:/app
     restart: unless-stopped
 
   frontend:

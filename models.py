@@ -1,5 +1,6 @@
-from sqlalchemy import String,Integer,Column, ForeignKey
+from sqlalchemy import String,Integer,Column,Float,DateTime, ForeignKey
 from database import Base
+from datetime import datetime, timezone
 
 # Database Model
 class Word(Base):
@@ -10,8 +11,8 @@ class Word(Base):
     name = Column(String(100), nullable=False)
     translation = Column(String(100))
     difficulty = Column(String(30))
-    review_count = Column(Integer, default = 0)
-    interval = Column(Integer, default = 1)
+    ease_factor = Column(Float, default=2.5)
+    next_review = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class User(Base):
