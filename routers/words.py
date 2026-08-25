@@ -96,7 +96,7 @@ def delete_user(db: Session = Depends(get_db), current_user: User = Depends(get_
 # Create word
 @router.post("")
 async def create_word(word: WordCreate, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
-    if db.query(Word).filter(func.lower(Word.name) == word.name.lower(), Word.user_id == current_user.id).filter():
+    if db.query(Word).filter(func.lower(Word.name) == word.name.lower(), Word.user_id == current_user.id).first():
         raise HTTPException(status_code=400, detail="Word already exists")
 
     # Create a new word
@@ -138,10 +138,13 @@ async def quiz_words(db:Session = Depends(get_db), current_user: User = Depends(
     if not db_words:
         raise HTTPException(status_code=404, detail="No words inside database")
 
-    lowest = min(w.review_count for w in db_words)
-    candidates = [w for w in db_words if w.review_count == lowest]
-    return random.choice(candidates)
+    now = datetime.now(timezone.utc)
+    due_words = [w for w in db_words if w.next_review.replace(tzinfo=timezone.utc) <= now]
 
+    if due_words:
+        return random.choice(due_words)
+
+    return min(db_words, key=lambda w: w.next_review)
 
 @router.post("/{word_id}/review")
 async def review_words(
@@ -152,19 +155,20 @@ async def review_words(
 ):
     db_word = db.query(Word).filter(Word.id == word_id, Word.user_id == current_user.id).first()
     if not db_word:
-        raise HTTPException(status_code=404, detail="Word does not exist in your vocabulary")
+        raise HTTPException(status_code=404, detail="Word does not exist")
 
+    now = datetime.now(timezone.utc)
     if remembered:
-        db_word.review_count += 1
-        db_word.interval = max(1, round(db_word.interval * 2.0))
+        db_word.ease_factor = min(3.0, db_word.ease_factor + 0.1)
     else:
-        db_word.review_count = max(0, db_word.review_count - 1)
-        db_word.interval = max(1, round(db_word.interval * 0.5))
+        db_word.ease_factor = max(1.3, db_word.ease_factor - 0.2)
+
+    days_ahead = 1 if not remembered else max(1, round(db_word.ease_factor))
+    db_word.next_review = now + timedelta(days=days_ahead)
 
     db.commit()
     db.refresh(db_word)
-    return {"message": "Word reviewed successfully"}
-
+    return {"message": "Word reviewed"}
 
 #Get word
 @router.get("")

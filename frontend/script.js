@@ -244,9 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         body: JSON.stringify({
                             name: newName,
                             translation: newTrans,
-                            difficulty: oldDiff,
-                            review_count: 0,
-                            interval: 1
+                            difficulty: oldDiff
                         })
                     });
                     if (res && res.ok) loadWords();
@@ -272,9 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     name,
                     translation,
-                    difficulty,
-                    review_count: 0,
-                    interval: 1
+                    difficulty
                 })
             });
 
