@@ -6,7 +6,7 @@ from config import settings
 from starlette import status
 from sqlalchemy import func
 from models import Word,User
-from schemas import WordCreate,UserCreate, UserPublic, Token
+from schemas import WordCreate,UserCreate, UserPublic, Token, RefreshRequest
 from sqlalchemy.orm import Session
 from database import get_db,get_user,create_user
 from jose import jwt,JWTError
@@ -21,6 +21,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
 ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
+REFRESH_TOKEN_EXPIRE_DAYS = settings.REFRESH_TOKEN_EXPIRE_DAYS
 
 # Security
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="words/login")
@@ -35,6 +36,12 @@ def create_access_token(data: dict, expires_minutes: int = ACCESS_TOKEN_EXPIRE_M
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(minutes=expires_minutes)
     to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def create_refresh_token(data: dict, expires_days: int = REFRESH_TOKEN_EXPIRE_DAYS) -> str:
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(days=expires_days)
+    to_encode.update({"exp": expire, "type": "refresh"})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
 def authenticate_user(username: str, password: str, db: Session) -> Optional[User]:
@@ -79,8 +86,30 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends(), db:Session = D
         raise HTTPException(status_code=401,detail="Invalid credentials")
 
     access_token = create_access_token({"sub": user.username})
-    return {"access_token": access_token, "token_type": "bearer"}
+    refresh_token = create_refresh_token({"sub": user.username})
+    return {"access_token": access_token, "refresh_token": refresh_token, "token_type": "bearer"}
 
+@router.post("/refresh", response_model=Token)
+async def refresh_access_token(body: RefreshRequest, db:Session = Depends(get_db)):
+    cred_exc = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Invalid or expired refresh token",
+    )
+    try:
+        payload = jwt.decode(body.refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: Optional[str] = payload.get("sub")
+        if username is None or payload.get("type") != "refresh":
+            raise cred_exc
+    except JWTError:
+        raise cred_exc
+
+    user = db.query(User).filter(User.username == username).first()
+    if not user:
+        raise cred_exc
+
+    new_access_token = create_access_token({"sub": user.username})
+    new_refresh_token = create_refresh_token({"sub": user.username})
+    return {"access_token": new_access_token, "refresh_token": new_refresh_token, "token_type": "bearer"}
 @router.get("/me", response_model=UserPublic, summary="Get my profile (protected)")
 def read_me(current_user: User = Depends(get_current_user)):
     return current_user
@@ -124,7 +153,7 @@ async def update_word(word_id: int, word:WordCreate, db:Session = Depends(get_db
     db_word = db.query(Word).filter(Word.id == word_id, Word.user_id == current_user.id).first()
     if not db_word:
         raise HTTPException(status_code=404, detail="Word does not exist")
-    for field,value in word.dict(exclude={"review_count","interval"}).items():
+    for field,value in word.dict().items():
         setattr(db_word, field, value)
 
     db.commit()

@@ -103,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
 
             alert('Login successfully.');
             loginForm.reset();
@@ -113,7 +114,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    async function authFetch(endpoint, options = {}) {
+    async function refreshAccessToken() {
+        const refreshToken = localStorage.getItem('refresh_token');
+        if (!refreshToken) return false;
+
+        try {
+            const response = await fetch(`${API_URL}/words/refresh`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({refresh_token: refreshToken})
+            });
+            if (!response.ok) return false;
+
+            const data = await response.json();
+            localStorage.setItem('access_token', data.access_token);
+            localStorage.setItem('refresh_token', data.refresh_token);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    async function authFetch(endpoint, options = {}, isRetry = false) {
         const token = localStorage.getItem('access_token');
 
         const response = await fetch(`${API_URL}${endpoint}`, {
@@ -124,8 +146,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        if (response.status === 401 && !isRetry) {
+            const refreshed = await refreshAccessToken();
+            if (refreshed) {
+                return authFetch(endpoint, options, true);
+            }
+        }
+
         if (response.status === 401) {
             localStorage.removeItem('access_token');
+            localStorage.removeItem('refresh_token')
             alert('Session run out of time, log in again.');
             showSection('#auth-section');
             return null;
