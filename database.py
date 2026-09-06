@@ -6,9 +6,12 @@ from typing import Optional
 from sqlalchemy.sql.functions import user
 
 from fastapi import HTTPException
+from config import settings
 
 # Database setup
-engine = create_engine("sqlite:///words.db")
+connect_args = {"check_same_thread": False} if settings.DATABASE_URL.startswith("sqlite") else {}
+
+engine = create_engine(settings.DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -40,4 +43,3 @@ def create_user(username: str, hashed_password: str, db:Session, full_name: Opti
     db.commit()
     db.refresh(new_user)
     return new_user
-
